@@ -1,9 +1,29 @@
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from rest_framework import generics, views, response
+from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import User, VerifyPhone
-from .serializers import UserSerializer, RegisterSerializer, LoginSerializer, SendVerificationCodeSerializer
+from .models import User, VerifyPhone, PaymentHistory
+from .serializers import UserSerializer, RegisterSerializer, LoginSerializer, SendVerificationCodeSerializer, \
+    PaymentHistorySerializer
 from random import randint
 from .utils import send_verification_code
+
+
+class PaymentHistoryView(generics.ListAPIView):
+    serializer_class = PaymentHistorySerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return PaymentHistory.objects.filter(user_id=self.request.user.id)
+
+# @login_required
+# def get_payment_history(req):
+#     # payment_history = PaymentHistory.objects.filter(user_id=req.user.id)
+#     ls = list()
+#     for payment in payment_history:
+#         ls.append(PaymentHistorySerializer(payment).data)
+#     return HttpResponse(ls)
 
 
 class SendVerificationCodeAPIView(views.APIView):

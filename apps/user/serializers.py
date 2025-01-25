@@ -1,5 +1,11 @@
 from rest_framework import serializers
-from .models import User, VerifyPhone
+from .models import User, VerifyPhone, PaymentHistory
+
+
+class PaymentHistorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PaymentHistory
+        fields = ('name', 'amount', 'created_at')
 
 
 class LoginSerializer(serializers.ModelSerializer):

@@ -49,7 +49,7 @@ class VerifyPhone(models.Model):
 
 
 class PaymentHistory(models.Model):
-    user = models.ForeignKey(User, models.CASCADE)
+    user = models.ForeignKey(User, models.CASCADE, 'payment_history')
     name = models.CharField(max_length=100)
     amount = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
