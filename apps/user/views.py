@@ -3,11 +3,19 @@ from django.http import HttpResponse
 from rest_framework import generics, views, response
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import User, VerifyPhone, PaymentHistory
+from .models import User, VerifyPhone, PaymentHistory, MyLanguage
 from .serializers import UserSerializer, RegisterSerializer, LoginSerializer, SendVerificationCodeSerializer, \
-    PaymentHistorySerializer
+    PaymentHistorySerializer, MyLanguageSerializer
 from random import randint
 from .utils import send_verification_code
+
+
+class MyLanguageAPIView(generics.ListAPIView):
+    serializer_class = MyLanguageSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return MyLanguage.objects.filter(user_id=self.request.user.id)
 
 
 class PaymentHistoryView(generics.ListAPIView):
@@ -16,14 +24,6 @@ class PaymentHistoryView(generics.ListAPIView):
 
     def get_queryset(self):
         return PaymentHistory.objects.filter(user_id=self.request.user.id)
-
-# @login_required
-# def get_payment_history(req):
-#     # payment_history = PaymentHistory.objects.filter(user_id=req.user.id)
-#     ls = list()
-#     for payment in payment_history:
-#         ls.append(PaymentHistorySerializer(payment).data)
-#     return HttpResponse(ls)
 
 
 class SendVerificationCodeAPIView(views.APIView):

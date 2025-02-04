@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import PermissionsMixin, AbstractBaseUser, BaseUserManager
 from rest_framework.authtoken.models import Token
+from lang.models import Language, Level, Unit
 
 
 class UserManager(BaseUserManager):
@@ -56,3 +57,31 @@ class PaymentHistory(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class MyLanguage(models.Model):
+    user = models.ForeignKey(User, models.CASCADE, 'my_languages')
+    language = models.ForeignKey(Language, models.CASCADE)
+
+    def __str__(self):
+        return self.language.name
+
+
+class MyLevel(models.Model):
+    language = models.ForeignKey(MyLanguage, models.CASCADE, 'levels')
+    level = models.ForeignKey(Level, models.CASCADE)
+
+    def __str__(self):
+        return self.level.name
+
+
+class MyUnit(models.Model):
+    level = models.ForeignKey(MyLevel, models.CASCADE, 'units')
+    unit = models.ForeignKey(Unit, models.CASCADE)
+    percent = models.FloatField(default=0.0)
+    dialog_is_viewed = models.BooleanField(default=False)
+    vocab_answer = models.JSONField(default=dict)
+    phrase = models.JSONField(default=dict)
+
+    def __str__(self):
+        return self.unit.name

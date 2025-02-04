@@ -1,5 +1,35 @@
 from rest_framework import serializers
-from .models import BookBanner, Video, Podcast, Book
+from .models import BookBanner, Video, Podcast, Book, Language, Level, Unit
+
+
+class LanguageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Language
+        fields = ('id', 'name', 'image2', 'price')
+
+
+class LanguageDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Language
+        fields = ('id', 'name', 'image2', 'price', 'description', 'rating')
+
+
+class LevelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Level
+        fields = ('id', 'name', 'units_count')
+
+    units_count = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_units_count(obj):
+        return obj.units.count()
+
+
+class UnitSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Unit
+        fields = ('id', 'name')
 
 
 class BookBannerSerializer(serializers.ModelSerializer):
