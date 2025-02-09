@@ -28,7 +28,8 @@ class Unit(models.Model):
     audio_name = models.CharField(max_length=100)
     audio_description = models.TextField()
     audio = models.FileField(upload_to='audio/')
-
+    score = models.PositiveSmallIntegerField()
+    coin = models.PositiveSmallIntegerField()
     def __str__(self):
         return self.name
 

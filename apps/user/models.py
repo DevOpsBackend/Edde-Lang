@@ -81,7 +81,7 @@ class MyUnit(models.Model):
     percent = models.FloatField(default=0.0)
     dialog_is_viewed = models.BooleanField(default=False)
     vocab_answer = models.JSONField(default=dict)
-    phrase = models.JSONField(default=dict)
+    phrase_answer = models.JSONField(default=dict)
 
     def __str__(self):
         return self.unit.name

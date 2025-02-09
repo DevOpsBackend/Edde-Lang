@@ -1,5 +1,13 @@
 from rest_framework import serializers
-from .models import User, VerifyPhone, PaymentHistory, MyLanguage
+from .models import User, VerifyPhone, PaymentHistory, MyLanguage, MyLevel, MyUnit
+
+
+def get_level_percent(level):
+    count = level.units.count()
+    if count == 0:
+        count = 1
+    summa = sum([unit.percent for unit in level.units.all()])
+    return round(summa / count, 2)
 
 
 class MyLanguageSerializer(serializers.ModelSerializer):
@@ -16,20 +24,58 @@ class MyLanguageSerializer(serializers.ModelSerializer):
     def get_count_lesson(obj):
         return sum([levels.units.count() for levels in obj.language.levels.all()])
 
-    @staticmethod
-    def get_level_percent(level):
-        count = level.units.count()
-        if count == 0:
-            count = 1
-        summa = sum([unit.percent for unit in level.units.all()])
-        return round(summa / count, 2)
-
     def get_percent(self, obj):
         count = self.get_count_lesson(obj)
         if count == 0:
             count = 1
-        summa = sum([self.get_level_percent(level) for level in obj.levels.all()])
+        summa = sum([get_level_percent(level) for level in obj.levels.all()])
         return round(summa / count, 2)
+
+
+class MyLevelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MyLevel
+        fields = ('id', 'name', 'percent', 'unit_count')
+
+    name = serializers.CharField(source='level.name')
+    percent = serializers.SerializerMethodField()
+    unit_count = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_percent(obj):
+        return get_level_percent(obj)
+
+    @staticmethod
+    def get_unit_count(obj):
+        return obj.units.count()
+
+
+class MyUnitSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MyUnit
+        fields = ('id', 'name', 'percent')
+
+    name = serializers.CharField(source='unit.name')
+
+
+class MyUnitDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MyUnit
+        fields = ('id', 'name', 'audio_image', 'audio_name', 'audio_description', 'audio')
+
+    name = serializers.CharField(source='unit.name')
+    audio_image = serializers.CharField(source='unit.audio_image.url')
+    audio_name = serializers.CharField(source='unit.audio_name')
+    audio_description = serializers.CharField(source='unit.audio_description')
+    audio = serializers.CharField(source='unit.audio')
+
+
+class VocabAndPhraseSerializer(serializers.Serializer):
+    word = serializers.CharField()
+    translation = serializers.CharField()
+    translation_flag = serializers.ImageField()
+    description = serializers.CharField()
+    example = serializers.CharField()
 
 
 class PaymentHistorySerializer(serializers.ModelSerializer):
